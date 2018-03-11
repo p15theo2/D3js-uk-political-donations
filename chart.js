@@ -4,6 +4,7 @@ var padding = 2;
 var nodes = [];
 var force, node, data, maxVal;
 var brake = 0.2;
+var snd = new Audio("click.mp3");
 var radius = d3.scale.sqrt().range([10, 20]);
 
 var partyCentres = { 
@@ -21,7 +22,7 @@ var entityCentres = {
 		individual: {x: w / 3.65, y: h / 3.3},
 	};
 
-var fill = d3.scale.ordinal().range(["#F02233", "#087FBD", "#FDBB30"]);
+var fill = d3.scale.ordinal().range(["#0000CC", "#404040", "#009900"]);
 
 var svgCentre = { 
     x: w / 3.6, y: h / 2
@@ -47,15 +48,18 @@ function transition(name) {
 		$("#value-scale").fadeIn(1000);
 		$("#view-donor-type").fadeOut(250);
 		$("#view-source-type").fadeOut(250);
+        $("#aver-scale").fadeOut(1000);
 		$("#view-party-type").fadeOut(250);
 		return total();
 		//location.reload();
 	}
+
 	if (name === "group-by-party") {
 		$("#initial-content").fadeOut(250);
 		$("#value-scale").fadeOut(250);
 		$("#view-donor-type").fadeOut(250);
 		$("#view-source-type").fadeOut(250);
+        $("#aver-scale").fadeOut(1000);
 		$("#view-party-type").fadeIn(1000);
 		return partyGroup();
 	}
@@ -64,17 +68,30 @@ function transition(name) {
 		$("#value-scale").fadeOut(250);
 		$("#view-party-type").fadeOut(250);
 		$("#view-source-type").fadeOut(250);
+        $("#aver-scale").fadeOut(1000);
 		$("#view-donor-type").fadeIn(1000);
 		return donorType();
 	}
-	if (name === "group-by-money-source")
+	if (name === "group-by-money-source"){
 		$("#initial-content").fadeOut(250);
 		$("#value-scale").fadeOut(250);
 		$("#view-donor-type").fadeOut(250);
 		$("#view-party-type").fadeOut(250);
-		$("#view-source-type").fadeIn(1000);
+        $("#aver-scale").fadeOut(1000);
+		$("#view-source-type").fadeIn(1500);
 		return fundsType();
 	}
+    if (name === "group-by-average") {
+    $("#initial-content").fadeOut(250);
+    $("#value-scale").fadeOut(250);
+    $("#aver-scale").fadeIn(1000);
+    $("#view-donor-type").fadeOut(250);
+    $("#view-party-type").fadeOut(250);
+    $("#view-source-type").fadeOut(250);
+     return average();
+		//location.reload();
+	}
+}
 
 function start() {
 
@@ -92,7 +109,8 @@ function start() {
 		.attr("r", 0)
 		.style("fill", function(d) { return fill(d.party); })
 		.on("mouseover", mouseover)
-		.on("mouseout", mouseout);
+		.on("mouseout", mouseout)
+        .on("click",mouseclick);
 		// Alternative title based 'tooltips'
 		// node.append("title")
 		//	.text(function(d) { return d.donor; });
@@ -142,6 +160,15 @@ function fundsType() {
 		.start();
 }
 
+function average() {
+
+	force.gravity(0)
+		.friction(0.9)
+		.charge(function(d) { return -Math.pow(d.radius, 2) / 2.8; })
+		.on("tick", aver)
+		.start();
+}
+
 function parties(e) {
 	node.each(moveToParties(e.alpha));
 
@@ -167,6 +194,12 @@ function types(e) {
 function all(e) {
 	node.each(moveToCentre(e.alpha))
 		.each(collide(0.001));
+
+		node.attr("cx", function(d) { return d.x; })
+			.attr("cy", function(d) {return d.y; });
+}
+function aver(e) {
+node.each(moveToaver(e.alpha));
 
 		node.attr("cx", function(d) { return d.x; })
 			.attr("cy", function(d) {return d.y; });
@@ -236,6 +269,19 @@ function moveToFunds(alpha) {
 			centreX = entityCentres[d.entity].x + 60;
 			centreY = 380;
 		}
+		d.x += (centreX - d.x) * (brake + 0.02) * alpha * 1.1;
+		d.y += (centreY - d.y) * (brake + 0.02) * alpha * 1.1;
+	};
+}
+function moveToaver(alpha) {
+	return function(d) {
+		var centreX = svgCentre.x + 75;
+        if (d.value <= 27000) {
+        centreY = svgCentre.y + 75;
+        }else{
+        centreY = svgCentre.y - 75;
+        }
+
 		d.x += (centreX - d.x) * (brake + 0.02) * alpha * 1.1;
 		d.y += (centreY - d.y) * (brake + 0.02) * alpha * 1.1;
 	};
@@ -315,6 +361,9 @@ function mouseover(d, i) {
 	var party = d.partyLabel;
 	var entity = d.entityLabel;
 	var offset = $("svg").offset();
+    responsiveVoice.cancel();
+    responsiveVoice.speak(donor);
+    responsiveVoice.speak(amount+'British Pounds');
 	
 
 
@@ -349,6 +398,7 @@ function mouseover(d, i) {
 	}
 
 function mouseout() {
+    responsiveVoice.cancel();
 	// no more tooltips
 		var mosie = d3.select(this);
 
@@ -356,11 +406,19 @@ function mouseout() {
 
 		d3.select(".tooltip")
 			.style("display", "none");
+        
 		}
+function mouseclick(d,i){
+var mosie = d3.select(this);
+this.q = d.donor;
+url ='http://www.google.com/search?q=' + this.q;
+window.open(url,'_blank');
+}
 
 $(document).ready(function() {
 		d3.selectAll(".switch").on("click", function(d) {
       var id = d3.select(this).attr("id");
+        snd.play();
       return transition(id);
     });
     return d3.csv("data/7500up.csv", display);
