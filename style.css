@@ -1,6 +1,7 @@
 body {
     background-color: #ffffff;
     font-family:'Raleway', 'Open Sans', sans-serif;
+    overflow: hidden;
 }
 p {
     margin: 5px 0;
@@ -107,6 +108,19 @@ li {
     text-align: right;
     right: 0
 }
+#view-photosbar {
+    position: absolute;
+    width: 100px;
+    height: 212px;
+    right: 6%;
+    top: 30%;
+    margin: 0;
+    padding: 0;
+    border: 3px solid rgba(50, 10, 0, 0.7);
+    box-shadow: 15px 5px 20px rgba(20, 20, 20, 0.7);
+    background-color: #C0C0C0;
+    z-index: 3
+}
 
 /* Value scale */
 #aver-scale{
@@ -150,7 +164,7 @@ circle.active {
     padding: 5px;
     line-height: 1.4;
     display: none;
-    height: 125px;
+    height: 150px;
     width: 280px;
     text-align: left;
     border: 4px solid rgba(0, 0, 0, .8);
@@ -158,7 +172,7 @@ circle.active {
     -moz-box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.5);
     -webkit-box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.5);
     box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.5);
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgba(225, 225, 225, 1);
     position: absolute;
 }
 .tooltip p, h3 {

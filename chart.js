@@ -6,12 +6,18 @@ var force, node, data, maxVal;
 var brake = 0.2;
 var snd = new Audio("click.mp3");
 var radius = d3.scale.sqrt().range([10, 20]);
+var lasthovered;
 
 var partyCentres = { 
     con: { x: w / 3, y: h / 3.3}, 
     lab: {x: w / 3, y: h / 2.3}, 
     lib: {x: w / 3	, y: h / 1.8}
   };
+
+
+
+var photosbar = new Array(6);
+
 
 var entityCentres = { 
     company: {x: w / 3.65, y: h / 2.3},
@@ -355,6 +361,7 @@ function display(data) {
 
 function mouseover(d, i) {
 	// tooltip popup
+    
 	var mosie = d3.select(this);
 	var amount = mosie.attr("amount");
 	var donor = d.donor;
@@ -369,6 +376,7 @@ function mouseover(d, i) {
 
 	// image url that want to check
 	var imageFile = "https://raw.githubusercontent.com/ioniodi/D3js-uk-political-donations/master/photos/" + donor + ".ico";
+    photoslist(d, imageFile);
 
 	
 	
@@ -396,6 +404,34 @@ function mouseover(d, i) {
 	
 	
 	}
+
+
+var maxphotos = 8
+var phocounter = 0
+
+function photoslist(d, imageFile) {
+    if( lasthovered == imageFile) return;
+    lasthovered = imageFile
+
+    var img = document.createElement("img");
+     img.style.height = '50px';
+     img.style.width = '50px';
+    
+    img.src = imageFile;
+    var src = document.getElementById("view-photosbar");
+    
+    src.appendChild(img);
+    
+    if (phocounter >= maxphotos) {
+        src.removeChild(src.childNodes[maxphotos - 1]);
+    } else {
+        phocounter++;
+    }
+    if(src.childNodes[maxphotos - 8]!=src.childNodes[maxphotos - 7]  )
+    src.insertBefore(img, src.childNodes[0]);
+    
+    
+    }
 
 function mouseout() {
     responsiveVoice.cancel();
